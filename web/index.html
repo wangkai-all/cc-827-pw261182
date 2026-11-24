@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EchoSeq · 事件序列背景与触发核分析</title>
+  <meta name="description" content="从零实现的多类别 Hawkes 事件序列分析、窗口似然、留出诊断、合成反例与版本对照。" />
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232a78d6'/%3E%3Cpath d='M6 20c4 0 4-9 8-9s4 12 8 12 2-7 4-7' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">E</div>
+      <div>
+        <h1>EchoSeq 事件序列溯源台</h1>
+        <p>背景强度 · 触发核 · 窗口/停采似然 · 留出检验</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <span class="badge"><span class="dot"></span>真实数值拟合，无模拟结果冒充拟合</span>
+      <span class="badge">ρ(η) 稳定性闸门</span>
+      <span class="badge">相关 ≠ 因果</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn ghost small" id="themeToggle" type="button">切换主题</button>
+      <button class="btn small" id="exportReportBtn" type="button">导出 JSON</button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar">
+      <section class="card">
+        <h2>1. 数据与观测窗口</h2>
+        <label class="field">合成示例 / 反例
+          <select id="scenarioSelect">
+            <option value="self_excitation">自激 + 跨类别触发</option>
+            <option value="background_only">独立泊松背景（误归因反例）</option>
+            <option value="background_shift">背景突变（常数背景反例）</option>
+            <option value="cross_trigger">跨类别触发</option>
+            <option value="observation_gaps">中间停采 / 多窗口</option>
+            <option value="rounded_batches">成批舍入时间戳</option>
+          </select>
+        </label>
+        <div class="row">
+          <label class="field" style="flex:1">随机种子
+            <input id="seedInput" type="number" value="11" min="1" max="99999" />
+          </label>
+          <button class="btn" id="generateBtn" type="button" style="margin-top:17px">生成</button>
+        </div>
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="导入 JSON 或 CSV">
+          <strong>点击或拖入</strong> JSON / CSV<br />
+          <span class="small">CSV 需 time/timestamp 与 category/type 列；窗口可用下方 JSON</span>
+          <input id="fileInput" type="file" accept=".json,.csv,application/json,text/csv" class="hidden" />
+        </div>
+        <label class="field">观测窗口 JSON（start/end）
+          <textarea id="windowsInput" spellcheck="false" placeholder='[{"start":0,"end":120}]'></textarea>
+        </label>
+        <div class="row">
+          <button class="btn small block" id="applyWindowsBtn" type="button">应用窗口到当前数据</button>
+        </div>
+        <p class="small muted">窗口外无记录不代表无事件。首窗口左边界与中间缺口会进入校正、似然和诊断。</p>
+      </section>
+
+      <section class="card">
+        <h2>2. 事件类别</h2>
+        <div id="categoryList" class="category-list">
+          <span class="muted small">尚未载入数据。</span>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn small ghost" id="selectAllCats" type="button">全选</button>
+          <button class="btn small ghost" id="invertCats" type="button">反选</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>3. 背景与拟合假设</h2>
+        <label class="field">训练 / 留出分割（按观测时长）
+          <input id="trainFrac" type="range" min="0.5" max="0.85" step="0.05" value="0.7" />
+          <span class="small muted" id="trainFracValue">70% 训练 · 30% 留出</span>
+        </label>
+        <label class="field">背景复杂度（训练段 AIC 选择）
+          <select id="bgComplexity">
+            <option value="auto" selected>自动：1 / 2 / 3 段</option>
+            <option value="1">常数背景</option>
+            <option value="2">两段背景</option>
+            <option value="3">三段背景</option>
+          </select>
+        </label>
+        <label class="field">核衰减自由度
+          <select id="kernelComplexity">
+            <option value="auto" selected>自动：共同 / 类别对 β</option>
+            <option value="common">所有链接共同 β</option>
+            <option value="pair">每个来源→目标对独立 β</option>
+          </select>
+        </label>
+        <label class="field">核形状（训练段 AIC 选择）
+          <select id="kernelShape">
+            <option value="auto" selected>自动：尖峰指数 / 延迟 Gamma(2)</option>
+            <option value="exp">仅指数核 φ=ηβe⁻βu</option>
+            <option value="gamma2">仅延迟 Gamma(2) φ=ηβ²u e⁻βu</option>
+          </select>
+        </label>
+        <label class="field">起始历史处理
+          <select id="boundaryMode">
+            <option value="stationary" selected>稳态均值校正（推荐）</option>
+            <option value="observed">零历史朴素敏感性</option>
+            <option value="warmup">使用 history_start 已知历史</option>
+          </select>
+        </label>
+        <label class="checkline"><input id="gapCorrection" type="checkbox" checked /> 缺口内未记录事件做一阶均值注入；关闭则只衰减已知事件</label>
+        <label class="checkline"><input id="enforceStable" type="checkbox" checked /> 拟合时约束 ρ(η)&lt;0.995；关闭可做超临界误归因诊断</label>
+        <button class="btn primary block" id="runBtn" type="button">拟合并检验</button>
+        <p class="small muted">拟合在本机 Python 标准库中完成；不调用外部服务。</p>
+      </section>
+
+      <section class="card">
+        <h2>版本对照</h2>
+        <div class="row">
+          <input type="text" id="versionName" placeholder="版本名，如：常数背景-v1" />
+          <button class="btn small primary" id="saveVersionBtn" type="button">保存</button>
+        </div>
+        <div id="versionList" style="margin-top:10px"></div>
+        <div class="row">
+          <button class="btn small block" id="compareVersionsBtn" type="button">对照选中的两个版本</button>
+        </div>
+      </section>
+    </aside>
+
+    <main class="main">
+      <nav class="tabs" role="tablist" aria-label="分析视图">
+        <button class="tab" role="tab" aria-selected="true" data-tab="overview">总览/候选模型</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="timeline">强度时间线</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="inspector">事件归因</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="matrix">触发矩阵</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="diagnostics">留出诊断/预测</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="lab">合成反例自检</button>
+        <button class="tab" role="tab" aria-selected="false" data-tab="versions">版本对照</button>
+      </nav>
+
+      <section class="tab-panel active" data-panel="overview">
+        <div id="emptyState" class="empty-state">
+          <h2>从一个合成反例或导入事件文件开始</h2>
+          <p>应用会拟合 μ 背景率与 η、β 指数触发核，在训练段决定复杂度，并在未参与模型选择的留出段检查时间重标度残差与事件计数。</p>
+          <div class="row" style="justify-content:center;margin-top:12px">
+            <button class="btn primary" id="emptyLoadBtn" type="button">载入自激示例</button>
+            <button class="btn" id="emptyCounterBtn" type="button">载入背景突变反例</button>
+          </div>
+        </div>
+        <div id="overviewContent" class="hidden">
+          <div class="kpi-grid" id="kpiGrid"></div>
+          <div id="alertRegion" style="display:grid;gap:10px"></div>
+          <div class="card">
+            <h2>数据与窗口 <span class="tag" id="windowSourceTag"></span></h2>
+            <dl class="kv-list" id="dataKv"></dl>
+          </div>
+          <div class="card">
+            <h2>训练段候选模型与 AIC/BIC <span class="small muted">留出指标不参与选择</span></h2>
+            <div class="table-wrap">
+              <table class="data" id="candidateTable">
+                <thead><tr><th>模型</th><th>背景段</th><th>核形状 / β</th><th>参数</th><th>对数似然</th><th>AIC</th><th>BIC</th><th>ρ(η)</th><th>稳定性</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+            <p class="footer-note" id="candidateErrors"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="timeline">
+        <div class="card">
+          <h2>条件强度分解 <span class="small muted">实线总强度；蓝/橙等为类别，阴影显示背景与触发量级</span></h2>
+          <div class="row" style="margin-bottom:8px">
+            <label class="checkline" style="margin:0"><input type="checkbox" id="showTotalLine" checked /> 总强度</label>
+            <label class="checkline" style="margin:0"><input type="checkbox" id="showBgLines" checked /> 背景合计</label>
+            <label class="checkline" style="margin:0"><input type="checkbox" id="showTrigLines" checked /> 触发合计</label>
+          </div>
+          <div id="intensityChart" class="chart-wrap"></div>
+          <p class="small muted">黄色虚线为训练/留出分割；底部短竖线为事件；蓝色底纹是有效观测窗口。跨缺口线段仅作连续性提示，缺口规则以诊断说明为准。</p>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="inspector">
+        <div class="card">
+          <h2>单次事件的触发贡献与未归因基线</h2>
+          <div class="grid-2">
+            <label class="field">选择事件
+              <select id="eventSelect"></select>
+            </label>
+            <div class="row" style="align-items:flex-end">
+              <button class="btn" id="prevEventBtn" type="button">上一事件</button>
+              <button class="btn" id="nextEventBtn" type="button">下一事件</button>
+              <button class="btn ghost" id="surpriseEventBtn" type="button">高残差事件</button>
+            </div>
+          </div>
+          <div id="eventInspector"><p class="muted">运行拟合后可检查事件。</p></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="matrix">
+        <div class="card">
+          <h2>多类别触发矩阵 η <span class="small muted">列=来源，行=目标；单元为每个来源事件的期望直接子代</span></h2>
+          <div id="heatmap"></div>
+          <div class="alert info" style="margin-top:14px">
+            <div class="title">稳定性判据</div>
+            <div id="stabilityText"></div>
+          </div>
+        </div>
+        <div class="card">
+          <h2>衰减尺度 β 与有效记忆</h2>
+          <div class="table-wrap"><table class="data" id="betaTable"><thead><tr><th>来源→目标</th><th>β</th><th>1/β</th><th>3/β 诊断记忆</th><th>β×分辨率</th></tr></thead><tbody></tbody></table></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="diagnostics">
+        <div class="kpi-grid" id="diagKpis"></div>
+        <div class="grid-2">
+          <div class="card"><h2>留出时间重标度残差 QQ <span class="small muted">理想贴近红色 Exp(1) 分位线</span></h2><div id="qqChart"></div></div>
+          <div class="card"><h2>残差自相关 <span class="small muted">虚线为近似 95% 界</span></h2><div id="acfChart"></div></div>
+        </div>
+        <div class="card">
+          <h2>留出段分箱事件计数：观测 vs 补偿器期望</h2>
+          <div id="countChart"></div>
+          <div class="table-wrap" style="margin-top:12px"><table class="data" id="countCatTable"><thead><tr><th>类别</th><th>观测</th><th>期望</th><th>Pearson z</th></tr></thead><tbody></tbody></table></div>
+        </div>
+        <div class="card">
+          <h2>稳定性闸门与预测计数</h2>
+          <div id="forecastContent"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="lab">
+        <div class="card">
+          <h2>合成反例与参数恢复</h2>
+          <p>下列数据均由本应用内置 Hawkes/泊松仿真器从零生成。建议逐个生成并拟合，观察常数背景如何把背景突变误归因为 η，以及纯背景是否产生虚假链接。</p>
+          <div class="scenario-grid" id="labGrid"></div>
+        </div>
+        <div class="card" id="truthCard" hidden>
+          <h2>真值 vs 当前拟合</h2>
+          <div id="truthContent"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="versions">
+        <div class="card">
+          <h2>版本对照</h2>
+          <p class="muted">版本保存在此浏览器 localStorage，包含数据快照、参数、训练/留出指标与诊断结论。勾选两个版本后点击侧栏“对照选中的两个版本”。</p>
+          <div id="versionCompare"><div class="empty-state"><h2>还没有可对照版本</h2><p>在侧栏保存当前拟合，或运行合成自检后保存不同背景假设。</p></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="loading-overlay" id="loadingOverlay" aria-live="polite">
+    <div class="loading-card"><div class="spinner"></div><div><strong id="loadingTitle">正在真实拟合…</strong><div class="small muted" id="loadingSub">多候选 MLE、窗口补偿器与留出诊断可能需要数秒</div></div></div>
+  </div>
+  <div class="toast-region" id="toastRegion"></div>
+  <script src="/charts.js"></script>
+  <script src="/app.js"></script>
+</body>
+</html>

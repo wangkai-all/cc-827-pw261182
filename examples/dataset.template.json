@@ -1,0 +1,30 @@
+{
+  "name": "my-event-sequence",
+  "time_unit": "hour",
+  "resolution": 0.1,
+  "events": [
+    {
+      "t": 1.2,
+      "category": "A"
+    },
+    {
+      "t": 1.5,
+      "category": "B"
+    },
+    {
+      "t": 3.8,
+      "category": "A"
+    }
+  ],
+  "windows": [
+    [
+      0,
+      12
+    ],
+    [
+      14,
+      24
+    ]
+  ],
+  "history_start": -6
+}

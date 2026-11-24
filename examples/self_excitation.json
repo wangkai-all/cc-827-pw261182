@@ -1,0 +1,772 @@
+{
+  "name": "self_excitation",
+  "description": "正例：稳定的多类别自激/互激 Hawkes 过程，用于参数恢复。",
+  "time_unit": "hour",
+  "categories": [
+    "A",
+    "B"
+  ],
+  "events": [
+    {
+      "t": 1.9,
+      "category": "B"
+    },
+    {
+      "t": 2.3,
+      "category": "A"
+    },
+    {
+      "t": 3.0,
+      "category": "A"
+    },
+    {
+      "t": 3.1,
+      "category": "A"
+    },
+    {
+      "t": 3.6,
+      "category": "B"
+    },
+    {
+      "t": 3.8,
+      "category": "A"
+    },
+    {
+      "t": 3.8,
+      "category": "A"
+    },
+    {
+      "t": 4.0,
+      "category": "A"
+    },
+    {
+      "t": 4.2,
+      "category": "A"
+    },
+    {
+      "t": 4.3,
+      "category": "A"
+    },
+    {
+      "t": 4.5,
+      "category": "B"
+    },
+    {
+      "t": 4.7,
+      "category": "A"
+    },
+    {
+      "t": 4.9,
+      "category": "A"
+    },
+    {
+      "t": 7.0,
+      "category": "B"
+    },
+    {
+      "t": 7.9,
+      "category": "A"
+    },
+    {
+      "t": 10.4,
+      "category": "B"
+    },
+    {
+      "t": 12.3,
+      "category": "B"
+    },
+    {
+      "t": 15.8,
+      "category": "A"
+    },
+    {
+      "t": 18.5,
+      "category": "A"
+    },
+    {
+      "t": 18.7,
+      "category": "A"
+    },
+    {
+      "t": 19.5,
+      "category": "A"
+    },
+    {
+      "t": 20.2,
+      "category": "B"
+    },
+    {
+      "t": 20.5,
+      "category": "B"
+    },
+    {
+      "t": 20.7,
+      "category": "B"
+    },
+    {
+      "t": 21.0,
+      "category": "A"
+    },
+    {
+      "t": 21.0,
+      "category": "B"
+    },
+    {
+      "t": 21.2,
+      "category": "A"
+    },
+    {
+      "t": 22.2,
+      "category": "B"
+    },
+    {
+      "t": 23.4,
+      "category": "B"
+    },
+    {
+      "t": 23.5,
+      "category": "B"
+    },
+    {
+      "t": 24.1,
+      "category": "A"
+    },
+    {
+      "t": 24.5,
+      "category": "B"
+    },
+    {
+      "t": 24.5,
+      "category": "B"
+    },
+    {
+      "t": 25.3,
+      "category": "B"
+    },
+    {
+      "t": 25.3,
+      "category": "B"
+    },
+    {
+      "t": 25.6,
+      "category": "B"
+    },
+    {
+      "t": 26.6,
+      "category": "B"
+    },
+    {
+      "t": 27.1,
+      "category": "B"
+    },
+    {
+      "t": 27.6,
+      "category": "B"
+    },
+    {
+      "t": 29.4,
+      "category": "B"
+    },
+    {
+      "t": 30.1,
+      "category": "A"
+    },
+    {
+      "t": 30.1,
+      "category": "B"
+    },
+    {
+      "t": 30.9,
+      "category": "A"
+    },
+    {
+      "t": 31.0,
+      "category": "B"
+    },
+    {
+      "t": 31.4,
+      "category": "A"
+    },
+    {
+      "t": 31.5,
+      "category": "B"
+    },
+    {
+      "t": 34.7,
+      "category": "B"
+    },
+    {
+      "t": 35.5,
+      "category": "B"
+    },
+    {
+      "t": 35.6,
+      "category": "A"
+    },
+    {
+      "t": 35.9,
+      "category": "B"
+    },
+    {
+      "t": 36.1,
+      "category": "A"
+    },
+    {
+      "t": 36.3,
+      "category": "A"
+    },
+    {
+      "t": 36.5,
+      "category": "B"
+    },
+    {
+      "t": 36.6,
+      "category": "B"
+    },
+    {
+      "t": 36.7,
+      "category": "B"
+    },
+    {
+      "t": 37.9,
+      "category": "A"
+    },
+    {
+      "t": 38.3,
+      "category": "A"
+    },
+    {
+      "t": 38.6,
+      "category": "A"
+    },
+    {
+      "t": 39.0,
+      "category": "A"
+    },
+    {
+      "t": 39.1,
+      "category": "A"
+    },
+    {
+      "t": 39.2,
+      "category": "A"
+    },
+    {
+      "t": 44.6,
+      "category": "A"
+    },
+    {
+      "t": 45.7,
+      "category": "B"
+    },
+    {
+      "t": 50.5,
+      "category": "A"
+    },
+    {
+      "t": 53.1,
+      "category": "B"
+    },
+    {
+      "t": 54.5,
+      "category": "B"
+    },
+    {
+      "t": 55.7,
+      "category": "A"
+    },
+    {
+      "t": 58.9,
+      "category": "A"
+    },
+    {
+      "t": 59.3,
+      "category": "A"
+    },
+    {
+      "t": 59.5,
+      "category": "A"
+    },
+    {
+      "t": 59.6,
+      "category": "A"
+    },
+    {
+      "t": 59.8,
+      "category": "A"
+    },
+    {
+      "t": 59.9,
+      "category": "A"
+    },
+    {
+      "t": 60.0,
+      "category": "A"
+    },
+    {
+      "t": 60.2,
+      "category": "A"
+    },
+    {
+      "t": 60.9,
+      "category": "A"
+    },
+    {
+      "t": 62.0,
+      "category": "A"
+    },
+    {
+      "t": 62.3,
+      "category": "A"
+    },
+    {
+      "t": 62.3,
+      "category": "B"
+    },
+    {
+      "t": 62.5,
+      "category": "A"
+    },
+    {
+      "t": 63.0,
+      "category": "A"
+    },
+    {
+      "t": 63.1,
+      "category": "A"
+    },
+    {
+      "t": 63.6,
+      "category": "B"
+    },
+    {
+      "t": 64.1,
+      "category": "A"
+    },
+    {
+      "t": 64.6,
+      "category": "B"
+    },
+    {
+      "t": 64.9,
+      "category": "B"
+    },
+    {
+      "t": 66.3,
+      "category": "B"
+    },
+    {
+      "t": 66.5,
+      "category": "B"
+    },
+    {
+      "t": 68.2,
+      "category": "B"
+    },
+    {
+      "t": 68.4,
+      "category": "B"
+    },
+    {
+      "t": 68.4,
+      "category": "B"
+    },
+    {
+      "t": 68.5,
+      "category": "B"
+    },
+    {
+      "t": 68.6,
+      "category": "B"
+    },
+    {
+      "t": 68.8,
+      "category": "B"
+    },
+    {
+      "t": 69.3,
+      "category": "B"
+    },
+    {
+      "t": 69.9,
+      "category": "A"
+    },
+    {
+      "t": 70.5,
+      "category": "A"
+    },
+    {
+      "t": 72.0,
+      "category": "B"
+    },
+    {
+      "t": 72.6,
+      "category": "A"
+    },
+    {
+      "t": 73.1,
+      "category": "B"
+    },
+    {
+      "t": 73.3,
+      "category": "B"
+    },
+    {
+      "t": 74.1,
+      "category": "B"
+    },
+    {
+      "t": 74.3,
+      "category": "B"
+    },
+    {
+      "t": 74.7,
+      "category": "A"
+    },
+    {
+      "t": 75.0,
+      "category": "B"
+    },
+    {
+      "t": 75.1,
+      "category": "B"
+    },
+    {
+      "t": 75.6,
+      "category": "A"
+    },
+    {
+      "t": 75.7,
+      "category": "B"
+    },
+    {
+      "t": 75.9,
+      "category": "A"
+    },
+    {
+      "t": 75.9,
+      "category": "A"
+    },
+    {
+      "t": 76.1,
+      "category": "B"
+    },
+    {
+      "t": 76.2,
+      "category": "B"
+    },
+    {
+      "t": 76.4,
+      "category": "B"
+    },
+    {
+      "t": 76.7,
+      "category": "B"
+    },
+    {
+      "t": 77.0,
+      "category": "A"
+    },
+    {
+      "t": 77.0,
+      "category": "B"
+    },
+    {
+      "t": 77.4,
+      "category": "B"
+    },
+    {
+      "t": 78.4,
+      "category": "B"
+    },
+    {
+      "t": 78.4,
+      "category": "B"
+    },
+    {
+      "t": 78.5,
+      "category": "B"
+    },
+    {
+      "t": 78.6,
+      "category": "B"
+    },
+    {
+      "t": 78.8,
+      "category": "B"
+    },
+    {
+      "t": 79.3,
+      "category": "A"
+    },
+    {
+      "t": 81.9,
+      "category": "B"
+    },
+    {
+      "t": 82.0,
+      "category": "A"
+    },
+    {
+      "t": 82.2,
+      "category": "B"
+    },
+    {
+      "t": 82.9,
+      "category": "A"
+    },
+    {
+      "t": 84.1,
+      "category": "B"
+    },
+    {
+      "t": 86.0,
+      "category": "B"
+    },
+    {
+      "t": 90.6,
+      "category": "B"
+    },
+    {
+      "t": 93.1,
+      "category": "B"
+    },
+    {
+      "t": 93.4,
+      "category": "B"
+    },
+    {
+      "t": 93.5,
+      "category": "B"
+    },
+    {
+      "t": 93.6,
+      "category": "B"
+    },
+    {
+      "t": 94.5,
+      "category": "A"
+    },
+    {
+      "t": 94.5,
+      "category": "A"
+    },
+    {
+      "t": 94.5,
+      "category": "B"
+    },
+    {
+      "t": 94.7,
+      "category": "B"
+    },
+    {
+      "t": 95.1,
+      "category": "B"
+    },
+    {
+      "t": 95.3,
+      "category": "B"
+    },
+    {
+      "t": 96.1,
+      "category": "B"
+    },
+    {
+      "t": 96.3,
+      "category": "B"
+    },
+    {
+      "t": 97.0,
+      "category": "B"
+    },
+    {
+      "t": 98.7,
+      "category": "A"
+    },
+    {
+      "t": 105.5,
+      "category": "A"
+    },
+    {
+      "t": 105.7,
+      "category": "A"
+    },
+    {
+      "t": 106.3,
+      "category": "A"
+    },
+    {
+      "t": 106.6,
+      "category": "A"
+    },
+    {
+      "t": 106.9,
+      "category": "A"
+    },
+    {
+      "t": 107.8,
+      "category": "A"
+    },
+    {
+      "t": 107.8,
+      "category": "A"
+    },
+    {
+      "t": 108.1,
+      "category": "A"
+    },
+    {
+      "t": 108.4,
+      "category": "A"
+    },
+    {
+      "t": 108.7,
+      "category": "A"
+    },
+    {
+      "t": 108.9,
+      "category": "B"
+    },
+    {
+      "t": 109.2,
+      "category": "A"
+    },
+    {
+      "t": 109.2,
+      "category": "A"
+    },
+    {
+      "t": 109.7,
+      "category": "A"
+    },
+    {
+      "t": 110.0,
+      "category": "A"
+    },
+    {
+      "t": 110.2,
+      "category": "B"
+    },
+    {
+      "t": 110.6,
+      "category": "B"
+    },
+    {
+      "t": 110.7,
+      "category": "A"
+    },
+    {
+      "t": 110.7,
+      "category": "B"
+    },
+    {
+      "t": 110.9,
+      "category": "A"
+    },
+    {
+      "t": 110.9,
+      "category": "A"
+    },
+    {
+      "t": 110.9,
+      "category": "B"
+    },
+    {
+      "t": 111.0,
+      "category": "B"
+    },
+    {
+      "t": 112.1,
+      "category": "B"
+    },
+    {
+      "t": 112.8,
+      "category": "B"
+    },
+    {
+      "t": 114.6,
+      "category": "B"
+    },
+    {
+      "t": 115.0,
+      "category": "B"
+    },
+    {
+      "t": 115.5,
+      "category": "B"
+    },
+    {
+      "t": 115.9,
+      "category": "B"
+    },
+    {
+      "t": 116.2,
+      "category": "A"
+    },
+    {
+      "t": 116.5,
+      "category": "A"
+    },
+    {
+      "t": 116.6,
+      "category": "B"
+    },
+    {
+      "t": 117.7,
+      "category": "A"
+    },
+    {
+      "t": 117.8,
+      "category": "A"
+    },
+    {
+      "t": 117.8,
+      "category": "B"
+    },
+    {
+      "t": 118.1,
+      "category": "A"
+    },
+    {
+      "t": 118.3,
+      "category": "A"
+    }
+  ],
+  "windows": [
+    {
+      "start": 0.0,
+      "end": 120.0
+    }
+  ],
+  "resolution": 0.1,
+  "synthetic_truth": {
+    "mu": [
+      [
+        0.34
+      ],
+      [
+        0.22
+      ]
+    ],
+    "eta": [
+      [
+        0.52,
+        0.1
+      ],
+      [
+        0.08,
+        0.46
+      ]
+    ],
+    "beta": [
+      [
+        1.35,
+        0.9
+      ],
+      [
+        0.8,
+        1.15
+      ]
+    ]
+  }
+}
